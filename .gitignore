@@ -183,3 +183,5 @@ cython_debug/
 .vscode/
 archive/
 .DS_Store
+
+*.pth
