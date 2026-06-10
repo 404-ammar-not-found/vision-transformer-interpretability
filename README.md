@@ -1,125 +1,85 @@
-# Vision Transformer (ViT) From Scratch
+# Vision Transformer Research Notes in PyTorch
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![PyTorch](https://img.shields.io/badge/PyTorch-1.12%2B-orange.svg)
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)
 
-Implementation of Vision Transformer (ViT) architecture from scratch following the paper ["An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale"](https://arxiv.org/abs/2010.11929). This project includes a complete implementation of the ViT model with training on a 10% subset of ImageNet-1K.
+This repository is an early-stage research notebook set for studying Vision Transformers in PyTorch. It combines a from-scratch implementation, fine-tuning experiments on Oxford Flowers 102, and attention visualisation work. The emphasis is on clear experimental notes, reproducible artefacts, and traceable source material rather than on packaging a production library.
 
-## Table of Contents
+## Research Aim
 
-- [Features](#features)
-- [Installation](#installation)
-- [Dataset](#dataset)
-- [Model Architecture](#model-architecture)
-- [Training](#training)
-- [Visualization](#visualization)
-- [Usage](#usage)
-- [Results](#results)
-- [References](#references)
-- [License](#license)
+- Reconstruct the ViT pipeline from first principles.
+- Fine-tune a pretrained ViT on Oxford Flowers 102.
+- Inspect patch embeddings, class tokens, positional embeddings, QKV projections, and multi-head attention.
+- Record model summaries, figures, and intermediate results as a laboratory-style log.
 
-## Features
+## Source Material
 
-- Complete implementation of Vision Transformer from scratch
-- Custom patch embedding layer
-- Multi-head self-attention blocks
-- Transformer encoder implementation
-- Training on ImageNet-1K subset
-- Comprehensive visualizations of image patching and attention
-- Learning rate scheduling with warmup
+External sources used in the project:
 
-## Installation
+1. Dosovitskiy et al., [An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale](https://arxiv.org/abs/2010.11929).
+2. [Oxford Flowers 102](https://www.robots.ox.ac.uk/~vgg/data/flowers/102/) dataset.
+3. [PyTorch](https://pytorch.org/), [torchvision](https://pytorch.org/vision/stable/index.html), [timm](https://github.com/huggingface/pytorch-image-models), [torchinfo](https://github.com/TylerYep/torchinfo), and [matplotlib](https://matplotlib.org/).
 
-First, clone this repository:
+Internal source material in this repository:
+
+- [src/understanding_vit_from_scratch.ipynb](src/understanding_vit_from_scratch.ipynb)
+- [src/finetuning_vit.ipynb](src/finetuning_vit.ipynb)
+- [src/understanding_how_vits_see.ipynb](src/understanding_how_vits_see.ipynb)
+- [summaries/vit_summary.txt](summaries/vit_summary.txt)
+- [summaries/patch_embedding_summary.txt](summaries/patch_embedding_summary.txt)
+- [summaries/transformer_encoder_summary.txt](summaries/transformer_encoder_summary.txt)
+- [ViT_summary.txt](ViT_summary.txt)
+
+## Repository Record
+
+| Path | Role in the study |
+| --- | --- |
+| [src/understanding_vit_from_scratch.ipynb](src/understanding_vit_from_scratch.ipynb) | From-scratch ViT reconstruction, dataset handling, patching, and architecture notes. |
+| [src/finetuning_vit.ipynb](src/finetuning_vit.ipynb) | Fine-tuning a pretrained ViT on Oxford Flowers 102. |
+| [src/understanding_how_vits_see.ipynb](src/understanding_how_vits_see.ipynb) | Attention reconstruction and head-level visualisation. |
+| [summaries/](summaries/) | Short technical summaries of the patch embedding, transformer encoder, and overall ViT design. |
+| [figures/](figures/) | Saved plots, sample images, and attention maps. |
+| [src/archive/flowers102/](src/archive/flowers102/) | Local dataset cache used by the notebooks. |
+
+## Checkpoints And Artefacts
+
+- `src/pretrained_models/vit_base_16.pth`: pretrained ViT weights used as a starting point.
+- `src/finetuned_models/best_model.pth`: the finetuned Flowers 102 checkpoint.
+- `figures/`: exported plots from the notebook runs.
+- `summaries/`: concise written summaries of the model blocks and architecture.
+
+## Experimental Setup
+
+- Core model family: ViT base with patch size 16.
+- Common image resolutions: 224 px in the from-scratch material and 384 px in the fine-tuning and attention notebooks.
+- Primary classification task: Oxford Flowers 102.
+- Visual outputs and checkpoints are written to the repository so the experiments can be inspected after execution.
+
+## Reproducing The Notebooks
 
 ```bash
 git clone https://github.com/404-ammar-not-found/ViT-In-Pytorch.git
 cd ViT-In-Pytorch
-```
-
-Create a virtual environment and install dependencies:
-
-```bash
-conda create -n vit python=3.9 -y
-conda activate vit
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Alternatively using pip:
+Then open the notebooks in `src/` and run them in this order if you want the full narrative:
 
-```bash
-python -m venv vit_env
-source vit_env/bin/activate  # Linux/MacOS
-# vit_env\Scripts\activate  # Windows
-pip install -r requirements.txt
-```
+1. `understanding_vit_from_scratch.ipynb`
+2. `finetuning_vit.ipynb`
+3. `understanding_how_vits_see.ipynb`
 
-### Requirements
+The notebooks will populate `figures/` and `src/finetuned_models/` with plots and checkpoints as the experiments run.
 
-- PyTorch 2.8.0+
-- torchvision 0.24.0+
-- torchinfo 1.8.0+
-- matplotlib 3.10.8+
-- tqdm 4.67.1+
+## Notes On The Record
 
-## Dataset
+- This is an exploratory research codebase, not a polished framework.
+- The notebooks are intentionally verbose so that the reasoning is easy to audit later.
+- If you are extending the work, keep new observations in the same source-and-artefact style so the record remains coherent.
 
-This implementation uses a 10% subset of the ImageNet-1K dataset for training and evaluation. To use the dataset:
+## Licence
 
-1. Download the ImageNet dataset (or the subset) from [Kaggle](https://www.kaggle.com/datasets/ambityga/imagenet100)
-2. Extract the archive to the `archive/` directory with the following structure:
-   ```
-   archive/
-   ├── train/
-   │   ├── class1/
-   │   ├── class2/
-   │   └── ...
-   └── test/
-       ├── class1/
-       ├── class2/
-       └── ...
-   ```
-
-## Model Architecture
-
-The Vision Transformer model implemented in this notebook follows the architecture described in the original ViT paper:
-
-```
-Input Image → Patch Embedding → Positional Encoding → Transformer Encoder (x12) → MLP Head → Classification
-```
-
-Key components:
-- **Patch Embedding**: Splits the image into 16×16 patches
-- **Positional Encoding**: Adds positional information to patches
-- **Transformer Encoder**: 12 layers with 6 attention heads
-- **MLP Head**: Final classification layer
-
-
-## Training
-
-The model is trained with the following hyperparameters:
-- Batch size: 512
-- Learning rate: 3e-3 with linear warmup
-- Optimizer: AdamW with weight decay 0.3
-- Loss function: Cross-Entropy
-- Training epochs: 2 (example in notebook)
-
-## References
-
-1. [An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale](https://arxiv.org/abs/2010.11929)
-2. [ImageNet Dataset](http://www.image-net.org/)
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgements
-
-- Thanks to the original authors of the Vision Transformer paper
-- PyTorch team for the excellent deep learning framework
-- [torchinfo](https://github.com/TylerYep/torchinfo) for model visualization tools
-
----
-
-**Note**: This is a research implementation and may require modifications for production use. Training full ViT models requires significant computational resources. The notebook demonstrates the concepts with a smaller subset of ImageNet for accessibility on consumer hardware.
+This project is licensed under the MIT Licence. See [LICENSE](LICENSE) for details.
